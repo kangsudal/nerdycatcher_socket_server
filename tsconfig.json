@@ -3,6 +3,7 @@
     "outDir": "dist",
 
     "incremental": true,
+    "tsBuildInfoFile": "./.tsbuildinfo",
     "target": "es6",
     "module": "commonjs",
     "strict": true,
