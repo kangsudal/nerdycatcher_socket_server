@@ -26,42 +26,60 @@ app.get("/", (req, res) => {
 // 실시간 통신 메인 로직
 // ESP32나 Flutter 앱 같은 클라이언트가 서버에 접속할 때마다 이 안의 코드가 실행됨
 wss.on("connection", (ws) => {
-  console.log("🟢 WebSocket 클라이언트 연결됨");
+//   console.log("🟢 WebSocket 클라이언트 연결됨");
 
-  // ESP32에서 JSON 형식의 데이터를 받으면 실행
-  ws.on("message", async (message) => {
-    try {
-      const data = JSON.parse(message.toString()); // 받은 문자열 데이터를 JSON으로 파싱
-      console.log("📡 ESP32에서 받은 데이터:", data);
+//   // ESP32에서 JSON 형식의 데이터를 받으면 실행
+//   ws.on("message", async (message) => {
+//     try {
+//       const data = JSON.parse(message.toString()); // 받은 문자열 데이터를 JSON으로 파싱
+//       console.log("📡 ESP32에서 받은 데이터:", data);
 
-      // 받은 데이터를 DB에 저장하는 로직
-      const { error } = await supabase.from("sensor_data").insert({
-        temperature: data.temperature,
-        humidity: data.humidity,
-        light_level: data.light_level,
-        plant_id: data.plant_id // 어떤 식물(화분)의 데이터인지
-      });
+//       // 받은 데이터를 DB에 저장하는 로직
+//       const { error } = await supabase.from("sensor_data").insert({
+//         temperature: data.temperature,
+//         humidity: data.humidity,
+//         light_level: data.light_level,
+//         plant_id: data.plant_id // 어떤 식물(화분)의 데이터인지
+//       });
 
-      if (error) {
-        console.error("❌ Supabase 저장 실패:", error);
-      } else {
-        console.log("✅ Supabase 저장 성공");
-        // Flutter 앱 등 모든 클라이언트에게 새 데이터를 실시간으로 전송
-        wss.clients.forEach((client) => {
-          if (client.readyState === WebSocket.OPEN) {
-            client.send(message);
-          }
-        });
-      }
-    } catch (err) {
-      console.error("❗ JSON 파싱 에러:", err);
-    }
-  });
+//       if (error) {
+//         console.error("❌ Supabase 저장 실패:", error);
+//       } else {
+//         console.log("✅ Supabase 저장 성공");
+//         // Flutter 앱 등 모든 클라이언트에게 새 데이터를 실시간으로 전송
+//         wss.clients.forEach((client) => {
+//           if (client.readyState === WebSocket.OPEN) {
+//             client.send(message);
+//           }
+//         });
+//       }
+//     } catch (err) {
+//       console.error("❗ JSON 파싱 에러:", err);
+//     }
+//   });
 
-  // 연결 해제 시 로그 출력
-  ws.on("close", () => {
-    console.log("🔌 클라이언트와 연결 해제됐습니다.");
-  });
+//   // 연결 해제 시 로그 출력
+//   ws.on("close", () => {
+//     console.log("🔌 클라이언트와 연결 해제됐습니다.");
+//   });
+
+    console.log("✅ 연결됨");
+
+    ws.on("message", function incoming(message) {
+    console.log("📡 데이터:", message.toString());
+    });
+
+    ws.on("pong", () => {
+    console.log("🏓 pong 받음");
+    });
+
+    ws.on("error", (err) => {
+    console.error("❌ 에러 발생:", err);
+    });
+
+    ws.on("close", (code, reason) => {
+    console.warn(`⚠️ 연결 종료됨: code=${code}, reason=${reason}`);
+    });
 });
 
 // 필요한 모든 설정과 규칙을 기반으로 서버 실행
