@@ -31,7 +31,7 @@ wss.on("connection", (ws) => {
   // ESP32에서 JSON 형식의 데이터를 받으면 실행
   ws.on("message", async (message) => {
     try {
-      const data = JSON.parse(message); // 받은 문자열 데이터를 JSON으로 파싱
+      const data = JSON.parse(message.toString()); // 받은 문자열 데이터를 JSON으로 파싱
       console.log("📡 ESP32에서 받은 데이터:", data);
 
       // 받은 데이터를 DB에 저장하는 로직
